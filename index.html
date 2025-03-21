@@ -1,656 +1,490 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hush Link</title>
-    <style>
-        :root {
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e1e;
-            --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --accent: #5d5dff;
-            --accent-hover: #4b4bff;
-            --error: #ff5d5d;
-            --success: #5dff5d;
-            --warning: #ffb73d;
-            --input-bg: #2d2d2d;
-            --border: #3d3d3d;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background-color: var(--bg-secondary);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        header {
-            padding: 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .content {
-            padding: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        textarea, input[type="password"], input[type="text"] {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background-color: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 1rem;
-            resize: none;
-            transition: border-color 0.2s;
-        }
-
-        textarea {
-            min-height: 150px;
-        }
-
-        textarea:focus, input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .password-container {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 5px;
-        }
-
-        .toggle-password svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .toggle-password:hover {
-            color: var(--text-primary);
-        }
-
-        .password-strength {
-            margin-top: 0.5rem;
-            height: 4px;
-            width: 100%;
-            background-color: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .password-strength-bar {
-            height: 100%;
-            width: 0;
-            border-radius: 2px;
-            transition: width 0.3s, background-color 0.3s;
-        }
-
-        .password-strength-text {
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
-            text-align: right;
-        }
-
-        .weak { background-color: var(--error); }
-        .medium { background-color: var(--warning); }
-        .strong { background-color: var(--success); }
-
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        button {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.25rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            flex: 1;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-
-        button:hover {
-            background-color: var(--accent-hover);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        button.secondary {
-            background-color: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-        }
-
-        button.secondary:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .result {
-            margin-top: 1.5rem;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            word-break: break-all;
-        }
-
-        .result p {
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .url-display {
-            font-size: 0.85rem;
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 0.75rem;
-            border-radius: 6px;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-
-        .copy-button {
-            display: block;
-            margin-top: 0.75rem;
-            width: 100%;
-        }
-
-        .alert {
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 1.25rem;
-        }
-
-        .alert.error {
-            background-color: rgba(255, 93, 93, 0.1);
-            border: 1px solid var(--error);
-            color: var(--error);
-        }
-
-        .alert.success {
-            background-color: rgba(93, 255, 93, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .alert.info {
-            background-color: rgba(93, 93, 255, 0.1);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 0.5rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .create-new {
-            display: block;
-            text-align: center;
-            margin-top: 1.5rem;
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .create-new:hover {
-            text-decoration: underline;
-        }
-
-        footer {
-            margin-top: 2rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
-
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        .info-box {
-            margin-top: 1.5rem;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .info-box h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-            color: var(--text-primary);
-        }
-
-        @media (max-width: 480px) {
-            .button-group {
-                flex-direction: column;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HushLink - Secure Message Sharing</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --primary: #8c66ff;
+      --text: #e0e0e0;
+      --text-secondary: #a0a0a0;
+      --border: #333333;
+      --error: #ff6b6b;
+      --success: #4caf50;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+    
+    .container {
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      margin-bottom: 24px;
+    }
+    
+    h1 {
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-size: 24px;
+    }
+    
+    h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    
+    textarea, input[type="text"], input[type="password"] {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 16px;
+      transition: border-color 0.2s;
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    
+    button:hover {
+      opacity: 0.9;
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+    
+    .secondary-button {
+      background-color: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .password-container {
+      position: relative;
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      width: auto;
+    }
+    
+    .result {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      word-break: break-all;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    
+    .copy-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background-color: rgba(0, 0, 0, 0.3);
+      color: var(--text);
+      border-radius: 4px;
+      font-size: 12px;
+      padding: 4px 8px;
+      cursor: pointer;
+      width: auto;
+      margin: 0;
+    }
+    
+    .copy-button:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    
+    .alert-error {
+      background-color: rgba(255, 107, 107, 0.1);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+    
+    .alert-success {
+      background-color: rgba(76, 175, 80, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 32px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .accordion {
+      margin-bottom: 16px;
+    }
+    
+    .accordion-header {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .accordion-content {
+      display: none;
+      padding: 16px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 0 0 6px 6px;
+      margin-top: -6px;
+      color: var(--text-secondary);
+    }
+    
+    .accordion-content.active {
+      display: block;
+    }
+    
+    .accordion-content p {
+      margin-bottom: 12px;
+    }
+    
+    .accordion-content ul {
+      padding-left: 24px;
+      margin-bottom: 12px;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <!-- Content will be dynamically inserted here -->
+  <div class="container">
+    <div id="encryption-mode" class="card fade-in">
+      <h1>HushLink</h1>
+      <h2>Create & share encrypted messages</h2>
+      
+      <textarea id="message" placeholder="Enter your secret message here..."></textarea>
+      
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Create a password">
+        <button type="button" class="toggle-password" id="toggle-encrypt-password">Show</button>
+      </div>
+      
+      <button id="encrypt-button">Encrypt & Generate Link</button>
+      
+      <div id="result-container" style="display: none;">
+        <div class="result" id="result">
+          <button class="copy-button" id="copy-button">Copy</button>
+          <span id="result-text"></span>
+        </div>
+      </div>
+      
+      <div class="accordion">
+        <div class="accordion-header">
+          <span>How it works</span>
+          <span>+</span>
+        </div>
+        <div class="accordion-content">
+          <p>HushLink uses AES-256 encryption to secure your messages. The process works as follows:</p>
+          <ul>
+            <li>Enter your message and create a password</li>
+            <li>Your message is encrypted using your password</li>
+            <li>A shareable link is generated that contains the encrypted message</li>
+            <li>Share this link with anyone you want to read your message</li>
+            <li>The recipient will need the password to decrypt and read the message</li>
+          </ul>
+          <p>Your message is never stored on any server - it exists only in the encrypted URL.</p>
+        </div>
+      </div>
     </div>
-    <footer>
-        <p>&copy; 2025 Hush Link | <a href="https://github.com/samar1h/hush_link" target="_blank" rel="noopener noreferrer">GitHub</a></p>
-    </footer>
+    
+    <div id="decryption-mode" class="card fade-in" style="display: none;">
+      <h1>HushLink</h1>
+      <h2>Decrypt the secret message</h2>
+      
+      <div class="password-container">
+        <input type="password" id="decrypt-password" placeholder="Enter the password">
+        <button type="button" class="toggle-password" id="toggle-decrypt-password">Show</button>
+      </div>
+      
+      <button id="decrypt-button">Decrypt Message</button>
+      
+      <div id="decrypted-message-container" style="display: none;">
+        <div class="alert alert-success">Message successfully decrypted!</div>
+        <div class="result" id="decrypted-message">
+          <button class="copy-button" id="copy-decrypted-button">Copy</button>
+          <span id="decrypted-text"></span>
+        </div>
+      </div>
+      
+      <div id="error-message" class="alert alert-error" style="display: none;">
+        Incorrect password or invalid encrypted message.
+      </div>
+      
+      <button class="secondary-button" id="create-new-button">Create New Secret Message</button>
+    </div>
+  </div>
+  
+  <footer>
+    Copyright 2025 | GitHub: <a href="https://github.com/samar1h/hush_link" target="_blank">github.com/samar1h/hush_link</a>
+  </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
-    <script>
-        const app = {
-            init() {
-                const encryptedData = this.getEncryptedDataFromUrl();
-                
-                if (encryptedData) {
-                    this.renderDecryptView(encryptedData);
-                } else {
-                    this.renderEncryptView();
-                }
-
-                document.addEventListener('click', this.handleClick.bind(this));
-                document.addEventListener('input', this.handleInput.bind(this));
-            },
-
-            handleClick(e) {
-                if (e.target.id === 'encrypt-btn') {
-                    this.encryptMessage();
-                } else if (e.target.id === 'decrypt-btn') {
-                    this.decryptMessage();
-                } else if (e.target.id === 'copy-url-btn') {
-                    this.copyToClipboard();
-                } else if (e.target.id === 'create-new-btn') {
-                    window.location.href = window.location.pathname;
-                } else if (e.target.closest('.toggle-password')) {
-                    this.togglePasswordVisibility(e.target.closest('.toggle-password'));
-                }
-            },
-
-            handleInput(e) {
-                if (e.target.id === 'password' && document.querySelector('.password-strength')) {
-                    this.updatePasswordStrength(e.target.value);
-                }
-            },
-
-            togglePasswordVisibility(button) {
-                const passwordInput = button.parentElement.querySelector('input');
-                const icon = button.querySelector('svg');
-                
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.innerHTML = `
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                        <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    `;
-                } else {
-                    passwordInput.type = 'password';
-                    icon.innerHTML = `
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    `;
-                }
-            },
-
-            updatePasswordStrength(password) {
-                const strengthBar = document.querySelector('.password-strength-bar');
-                const strengthText = document.querySelector('.password-strength-text');
-                
-                strengthBar.classList.remove('weak', 'medium', 'strong');
-                
-                let strength = 0;
-                
-                if (password.length > 0) strength += 1;
-                if (password.length >= 8) strength += 1;
-                if (/[A-Z]/.test(password)) strength += 1;
-                if (/[0-9]/.test(password)) strength += 1;
-                if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-                
-                let percentage, strengthClass, text;
-                
-                if (strength <= 2) {
-                    percentage = 33;
-                    strengthClass = 'weak';
-                    text = 'Weak';
-                } else if (strength <= 4) {
-                    percentage = 66;
-                    strengthClass = 'medium';
-                    text = 'Medium';
-                } else {
-                    percentage = 100;
-                    strengthClass = 'strong';
-                    text = 'Strong';
-                }
-                
-                strengthBar.style.width = `${percentage}%`;
-                strengthBar.classList.add(strengthClass);
-                strengthText.textContent = text;
-            },
-
-            getEncryptedDataFromUrl() {
-                try {
-                    const search = window.location.search;
-                    
-                    const params = new URLSearchParams(search);
-                    const dataParam = params.get('data');
-                    
-                    if (dataParam) return dataParam;
-                    
-                    if (search.startsWith('?')) {
-                        return decodeURIComponent(search.substring(1));
-                    }
-                    
-                    return null;
-                } catch (error) {
-                    console.error('Error parsing URL:', error);
-                    return null;
-                }
-            },
-
-            renderEncryptView() {
-                const appContainer = document.getElementById('app');
-                appContainer.innerHTML = `
-                    <header>
-                        <h1>Hush Link</h1>
-                        <p class="subtitle">Share encrypted messages securely</p>
-                    </header>
-                    <div class="content">
-                        <div id="alert-container"></div>
-                        <div class="form-group">
-                            <label for="message">Your Secret Message</label>
-                            <textarea id="message" placeholder="Type your secret message here..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <div class="password-container">
-                                <input type="password" id="password" placeholder="Create a password">
-                                <button type="button" class="toggle-password">
-                                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="password-strength">
-                                <div class="password-strength-bar"></div>
-                            </div>
-                            <div class="password-strength-text">No password</div>
-                        </div>
-                        <div class="button-group">
-                            <button id="encrypt-btn">Generate Secret Link</button>
-                        </div>
-                        <div id="result-container"></div>
-                        <div class="info-box">
-                            <h3>About Hush Link</h3>
-                            <p>This app uses AES-256 encryption with your password as the key to secure your messages. Your data is also compressed before encryption for efficiency.</p>
-                            <p>No data is stored on any server - everything happens in your browser and is shared via the URL.</p>
-                        </div>
-                    </div>
-                `;
-            },
-
-            renderDecryptView(encryptedData) {
-                const appContainer = document.getElementById('app');
-                appContainer.innerHTML = `
-                    <header>
-                        <h1>Hush Link</h1>
-                        <p class="subtitle">Someone sent you an encrypted message</p>
-                    </header>
-                    <div class="content">
-                        <div id="alert-container"></div>
-                        <!-- <div class="alert info">
-                            You need the correct password to decrypt this message.
-                        </div> -->
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <div class="password-container">
-                                <input type="password" id="password" placeholder="Enter the password to decrypt">
-                                <button type="button" class="toggle-password">
-                                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="button-group">
-                            <button id="decrypt-btn">Decrypt Message</button>
-                        </div>
-                        <div id="result-container"></div>
-                        <a href="${window.location.pathname}" class="create-new">Create your own secret message</a>
-                        <!-- <div class="info-box">
-                            <h3>How to Decrypt</h3>
-                            <p>Enter the password provided by the sender and click "Decrypt Message".</p>
-                            <p>This message is encrypted with AES-256 and can only be decrypted with the correct password.</p>
-                        </div> -->
-                    </div>
-                `;
-            },
-
-            showAlert(message, type) {
-                const alertContainer = document.getElementById('alert-container');
-                alertContainer.innerHTML = `
-                    <div class="alert ${type}">
-                        ${message}
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    alertContainer.innerHTML = '';
-                }, 5000);
-            },
-
-            async encryptMessage() {
-                const message = document.getElementById('message').value.trim();
-                const password = document.getElementById('password').value;
-                const resultContainer = document.getElementById('result-container');
-                const encryptBtn = document.getElementById('encrypt-btn');
-                
-                if (!message) {
-                    return this.showAlert('Please enter a message to encrypt', 'error');
-                }
-                
-                if (!password) {
-                    return this.showAlert('Please create a password for encryption', 'error');
-                }
-
-                try {
-                    encryptBtn.innerHTML = '<span class="loading"></span> Encrypting...';
-                    encryptBtn.disabled = true;
-                    
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    const messageBytes = new TextEncoder().encode(message);
-                    const compressedData = pako.deflate(messageBytes);
-                    
-                    const base64Compressed = btoa(String.fromCharCode.apply(null, new Uint8Array(compressedData)));
-                    
-                    const encrypted = CryptoJS.AES.encrypt(base64Compressed, password).toString();
-                    
-                    const urlEncoded = encodeURIComponent(encrypted);
-                    
-                    const url = `${window.location.origin}${window.location.pathname}?data=${urlEncoded}`;
-                    
-                    resultContainer.innerHTML = `
-                        <div class="result">
-                            <p>Your secret message link:</p>
-                            <div class="url-display">${url}</div>
-                            <button id="copy-url-btn" class="copy-button">Copy Link</button>
-                        </div>
-                    `;
-                    
-                    this.showAlert('Message encrypted successfully!', 'success');
-                } catch (error) {
-                    console.error('Encryption error:', error);
-                    this.showAlert('Error encrypting message. Please try again.', 'error');
-                } finally {
-                    encryptBtn.innerHTML = 'Generate Secret Link';
-                    encryptBtn.disabled = false;
-                }
-            },
-
-            async decryptMessage() {
-                const password = document.getElementById('password').value;
-                const resultContainer = document.getElementById('result-container');
-                const decryptBtn = document.getElementById('decrypt-btn');
-                
-                const encryptedData = this.getEncryptedDataFromUrl();
-                
-                if (!password) {
-                    return this.showAlert('Please enter a password to decrypt', 'error');
-                }
-                
-                if (!encryptedData) {
-                    return this.showAlert('No encrypted message found', 'error');
-                }
-
-                try {
-                    decryptBtn.innerHTML = '<span class="loading"></span> Decrypting...';
-                    decryptBtn.disabled = true;
-                    
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    let decodedMessage = '';
-                    try {
-                        const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, password);
-                        const base64Compressed = decryptedBytes.toString(CryptoJS.enc.Utf8);
-                        
-                        if (!base64Compressed) {
-                            throw new Error('Invalid password');
-                        }
-                        
-                        const compressedData = new Uint8Array([...atob(base64Compressed)].map(char => char.charCodeAt(0)));
-                        const decompressedData = pako.inflate(compressedData);
-                        decodedMessage = new TextDecoder().decode(decompressedData);
-                    } catch (decryptError) {
-                        throw new Error('Invalid password or corrupted message');
-                    }
-                    
-                    resultContainer.innerHTML = `
-                        <div class="result">
-                            <p>Decrypted Message:</p>
-                            <div style="white-space: pre-wrap;">${decodedMessage}</div>
-                        </div>
-                        <!-- <button id="create-new-btn" class="copy-button" style="margin-top: 1rem;">Create Your Own Secret Message</button> -->
-                    `;
-                    
-                    this.showAlert('Message decrypted successfully!', 'success');
-                } catch (error) {
-                    console.error('Decryption error:', error);
-                    this.showAlert(error.message, 'error');
-                    
-                    resultContainer.innerHTML = '';
-                } finally {
-                    decryptBtn.innerHTML = 'Decrypt Message';
-                    decryptBtn.disabled = false;
-                }
-            },
-
-            copyToClipboard() {
-                const urlDisplay = document.querySelector('.url-display');
-                const copyBtn = document.getElementById('copy-url-btn');
-                
-                if (!urlDisplay) return;
-                
-                const text = urlDisplay.textContent;
-                
-                navigator.clipboard.writeText(text)
-                    .then(() => {
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => {
-                            copyBtn.textContent = 'Copy Link';
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy:', err);
-                        this.showAlert('Failed to copy to clipboard', 'error');
-                    });
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            app.init();
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script>
+    // DOM Elements
+    const encryptionMode = document.getElementById('encryption-mode');
+    const decryptionMode = document.getElementById('decryption-mode');
+    const messageInput = document.getElementById('message');
+    const passwordInput = document.getElementById('password');
+    const decryptPasswordInput = document.getElementById('decrypt-password');
+    const encryptButton = document.getElementById('encrypt-button');
+    const decryptButton = document.getElementById('decrypt-button');
+    const resultContainer = document.getElementById('result-container');
+    const resultText = document.getElementById('result-text');
+    const decryptedMessageContainer = document.getElementById('decrypted-message-container');
+    const decryptedText = document.getElementById('decrypted-text');
+    const errorMessage = document.getElementById('error-message');
+    const createNewButton = document.getElementById('create-new-button');
+    const copyButton = document.getElementById('copy-button');
+    const copyDecryptedButton = document.getElementById('copy-decrypted-button');
+    const toggleEncryptPassword = document.getElementById('toggle-encrypt-password');
+    const toggleDecryptPassword = document.getElementById('toggle-decrypt-password');
+    
+    // Check if URL has an encrypted message
+    function checkForEncryptedMessage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const encryptedMsg = urlParams.get('msg');
+      
+      if (encryptedMsg) {
+        encryptionMode.style.display = 'none';
+        decryptionMode.style.display = 'block';
+        return true;
+      }
+      return false;
+    }
+    
+    // Encrypt message and generate URL
+    function encryptMessage() {
+      const message = messageInput.value.trim();
+      const password = passwordInput.value.trim();
+      
+      if (!message || !password) {
+        alert('Please enter both a message and a password');
+        return;
+      }
+      
+      try {
+        // Encrypt the message with AES
+        const encrypted = CryptoJS.AES.encrypt(message, password).toString();
+        
+        // Convert to base64url format (URL-safe)
+        const base64url = encrypted
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, '');
+        
+        // Generate the full URL
+        const url = `${window.location.origin}${window.location.pathname}?msg=${encodeURIComponent(base64url)}`;
+        
+        // Display the result
+        resultText.textContent = url;
+        resultContainer.style.display = 'block';
+        
+        // Scroll to the result
+        setTimeout(() => {
+          resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } catch (error) {
+        alert('Error encrypting message: ' + error.message);
+      }
+    }
+    
+    // Decrypt message from URL
+    function decryptMessage() {
+      const password = decryptPasswordInput.value.trim();
+      const urlParams = new URLSearchParams(window.location.search);
+      let encryptedMsg = urlParams.get('msg');
+      
+      if (!password || !encryptedMsg) {
+        errorMessage.style.display = 'block';
+        decryptedMessageContainer.style.display = 'none';
+        return;
+      }
+      
+      try {
+        // Convert from base64url format to base64
+        encryptedMsg = encryptedMsg
+          .replace(/-/g, '+')
+          .replace(/_/g, '/');
+        
+        // Add padding if needed
+        while (encryptedMsg.length % 4) {
+          encryptedMsg += '=';
+        }
+        
+        // Decrypt the message
+        const decrypted = CryptoJS.AES.decrypt(encryptedMsg, password).toString(CryptoJS.enc.Utf8);
+        
+        if (!decrypted) {
+          throw new Error('Decryption failed');
+        }
+        
+        // Display the decrypted message
+        decryptedText.textContent = decrypted;
+        decryptedMessageContainer.style.display = 'block';
+        errorMessage.style.display = 'none';
+      } catch (error) {
+        errorMessage.style.display = 'block';
+        decryptedMessageContainer.style.display = 'none';
+      }
+    }
+    
+    // Copy text to clipboard
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+    
+    // Toggle password visibility
+    function togglePasswordVisibility(inputElement, toggleButton) {
+      if (inputElement.type === 'password') {
+        inputElement.type = 'text';
+        toggleButton.textContent = 'Hide';
+      } else {
+        inputElement.type = 'password';
+        toggleButton.textContent = 'Show';
+      }
+    }
+    
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if URL has encrypted message
+      checkForEncryptedMessage();
+      
+      // Encrypt button
+      encryptButton.addEventListener('click', encryptMessage);
+      
+      // Decrypt button
+      decryptButton.addEventListener('click', decryptMessage);
+      
+      // Create new button
+      createNewButton.addEventListener('click', () => {
+        window.location.href = window.location.pathname;
+      });
+      
+      // Copy buttons
+      copyButton.addEventListener('click', () => {
+        copyToClipboard(resultText.textContent, copyButton);
+      });
+      
+      copyDecryptedButton.addEventListener('click', () => {
+        copyToClipboard(decryptedText.textContent, copyDecryptedButton);
+      });
+      
+      // Toggle password visibility
+      toggleEncryptPassword.addEventListener('click', () => {
+        togglePasswordVisibility(passwordInput, toggleEncryptPassword);
+      });
+      
+      toggleDecryptPassword.addEventListener('click', () => {
+        togglePasswordVisibility(decryptPasswordInput, toggleDecryptPassword);
+      });
+      
+      // Accordion functionality
+      const accordionHeaders = document.querySelectorAll('.accordion-header');
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+          const content = header.nextElementSibling;
+          content.classList.toggle('active');
+          header.querySelector('span:last-child').textContent = 
+            content.classList.contains('active') ? '-' : '+';
         });
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>
