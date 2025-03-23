@@ -1,4 +1,4 @@
-# hush_link
+# hush-link
 
 HushLink is a lightweight web app that allows you to create and share end-to-end encrypted messages securely. Built with HTML, CSS, and JavaScript, it leverages AES-256 encryption to ensure privacy.
 
